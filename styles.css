@@ -92,3 +92,7 @@ div.col  > ul {
 .multiply {
     background-blend-mode: multiply;
 }
+
+.blend-eq {
+    display: none;
+}

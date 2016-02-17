@@ -361,8 +361,7 @@ class: split
 
 Hva man kan gjøre...
 
-<button class="grad-off">On/Off</button>
-<button class="grad-showoff">Show</button>
+<button class="grad-off">On/Off</button><button class="grad-showoff">Show</button>
 <select class="blend-select">
   <option>multiply</option>
   <option>screen</option>
@@ -381,7 +380,75 @@ Hva man kan gjøre...
   <option>luminosity</option>
 </select>
 
+.blend-eqs[
+  .blend-eq.b-multiply[$$B(Cb, Cs) = Cb \cdot Cs$$]
+  .blend-eq.b-screen[$$B(Cb, Cs) = Cb + Cs -(Cb \cdot Cs)$$]
+  .blend-eq.b-overlay[$$B(Cb, Cs) = HardLight(Cs, Cb)$$]
+  .blend-eq.b-darken[$$B(Cb, Cs) = min(Cb, Cs)$$]
+  .blend-eq.b-lighten[$$B(Cb, Cs) = max(Cb, Cs)$$]
+  .blend-eq.b-color-dodge[
+    ```javascript
+if(Cb == 0)
+  B(Cb, Cs) = 0
+else if(Cs == 1)
+  B(Cb, Cs) = 1
+else
+  B(Cb, Cs) = min(1, Cb / (1 - Cs))
+    ```
+  ]
+  .blend-eq.b-color-burn[
+    ```javascript
+if(Cb == 1)
+  B(Cb, Cs) = 1
+else if(Cs == 0)
+  B(Cb, Cs) = 0
+else
+  B(Cb, Cs) = 1 - min(1, (1 - Cb) / Cs)
+    ```
+  ]
+  .blend-eq.b-hard-light[
+    ```javascript
+if(Cs <= 0.5)
+  B(Cb, Cs) = Multiply(Cb, 2 x Cs)
+else
+  B(Cb, Cs) = Screen(Cb, 2 x Cs -1)
+    ```
+  ]
+  .blend-eq.b-soft-light[
+    ```javascript
+if(Cs <= 0.5)
+  B(Cb, Cs) = Cb - (1 - 2 x Cs) x Cb x (1 - Cb)
+else
+  B(Cb, Cs) = Cb + (2 x Cs - 1) x (D(Cb) - Cb)
+function D(Cb) {
+  if(Cb <= 0.25)
+    D(Cb) = ((16 * Cb - 12) x Cb + 4) x Cb
+  else
+    D(Cb) = sqrt(Cb)
+}
+    ```
+  ]
+  .blend-eq.b-difference[$$B(Cb, Cs) = | Cb - Cs |$$]
+  .blend-eq.b-exclusion[$$B(Cb, Cs) = Cb + Cs - 2 \cdot Cb \cdot Cs$$]
+  .blend-eq.b-hue[https://www.w3.org/TR/compositing-1/#blendingnonseparable]
+  .blend-eq.b-saturation[https://www.w3.org/TR/compositing-1/#blendingnonseparable]
+  .blend-eq.b-color[https://www.w3.org/TR/compositing-1/#blendingnonseparable]
+  .blend-eq.b-luminosity[https://www.w3.org/TR/compositing-1/#blendingnonseparable]
+]
+
 <div class="blend-ex multiply"></div>
+
+---
+
+background-image: url(https://sarasoueidan.com/images/mix-blend-mode-example-1.png)
+
+# Eksempel
+
+---
+
+background-image: url(https://sarasoueidan.com/images/mix-blend-mode-example-2.png)
+
+# Eksempel
 
 ---
 
@@ -408,13 +475,8 @@ class: center middle
 og det refereses mye til Porter Duff operatorer allerede i introen i draften.
 * Slik det er i dag så må man laste ned en spesiell versjon av chromium for å se på det. Men vi er da bleeding-edge
 
+* http://ssp.impulsetrain.com/porterduff.html
 * http://adobe.github.io/web-platform/demos/compositing/
-
----
-
-class: center middle
-# Hvordan funker det?
-
 
 ---
 
@@ -489,18 +551,19 @@ class: center middle
         var node = e.target.nodeName;
         var classList = e.target.classList;
 
-        console.log('e', e.target);
-
         if (node === 'SELECT' && classList.contains('blend-select')) {
           if (harOverrideBlend !== undefined) {
             harOverrideBlend.remove();
             harOverrideBlend = undefined;
           }
-          harOverrideBlend = addStyleString('.blend-ex { background-blend-mode: '+e.target.value+' !important; }');
+          harOverrideBlend = addStyleString('.blend-ex { background-blend-mode: '+e.target.value+' !important; }.blend-eq.b-'+ e.target.value+' { display: initial !important; }');
+          document.querySelector('.blend-eq.b-'+ e.target.value).style.display = 'visible !important';
         }
         e.preventDefault();
         e.stopPropagation();
-      })
+      });
+
+      harOverrideBlend = addStyleString('.blend-eq.b-multiply { display: initial !important; }');
     </script>
   </body>
 </html>
