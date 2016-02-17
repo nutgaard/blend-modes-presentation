@@ -1,0 +1,94 @@
+div.col  > ul {
+    margin-top: -.5rem;
+}
+#front-blending {
+    font-size: 7rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    letter-spacing: -1.55rem;
+    isolation: isolate;
+}
+
+#front-blending span {
+    mix-blend-mode: multiply;
+}
+
+#front-blending span:nth-child(1) {
+    color: #FD5158;
+}
+#front-blending span:nth-child(2) {
+    color: #FFF9AE;
+}
+#front-blending span:nth-child(3) {
+    color: #36BDB2;
+}
+#front-blending span:nth-child(4) {
+    color: #BBB0A3;
+}
+#front-blending span:nth-child(5) {
+    color: #887E6F;
+}
+#front-blending span:nth-child(6) {
+    color: #FD5158;
+}
+#front-blending span:nth-child(7) {
+    color: #D4FEA1;
+}
+#front-blending span:nth-child(8) {
+    color: #FD5158;
+}
+#front-blending span:nth-child(9) {
+    color: #FFF9AE;
+}
+#front-blending span:nth-child(10) {
+    color: #36BDB2;
+}
+
+#ps-blend-mode {
+    margin-top: -40px;
+    max-width: 590px;
+}
+.hidden {
+    visibility: hidden;
+}
+.w3c-svg {
+    background-color: white;
+}
+.cols.two .col:nth-child(2n+2) {
+    margin-left: 0;
+}
+.cols.two .col:nth-child(1n+2) {
+    margin-bottom: 1rem;
+}
+.cols.three .col:nth-child(3n+5) {
+    margin-left: 0;
+}
+.cols.three .col:nth-child(1n+2) {
+    margin-bottom: 1rem;
+}
+
+.split .blend-ex {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    max-height: none !important;
+    max-width: 50%;
+    border: 0;
+}
+.MathJax_Display {
+    text-align: left !important;
+    margin: 0 !important;
+}
+
+.blend-ex {
+    width: 782px;
+    height:540px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url("resources/lighthouse.jpg"), linear-gradient(#de6e3d 0%, #6375F9 100%); 
+}
+
+.multiply {
+    background-blend-mode: multiply;
+}

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Webutvikling 101</title>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/bekk/remark/master/dist/bekk.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="bekk-black">
+    <textarea id="source">
+
+class: front-page
+  # CSS3 blend-modes
+  <p id="front-blending">
+    <span>b</span>
+    <span>l</span>
+    <span>e</span>
+    <span>n</span>
+    <span>d</span>
+    <span>-</span>
+    <span>m</span>
+    <span>o</span>
+    <span>d</span>
+    <span>e</span>
+  </h1>
+
+---
+
+class: agenda
+
+# Agenda
+
+* Hva er det?
+* Hvordan funker det?
+* Eksempler
+* Browserstøtte
+* The future
+
+---
+
+class: center middle
+# Hva er det?
+
+???
+
+Fordi som har vært borti photoshop tidligere...
+
+---
+
+class: cols two
+
+# Hva er det?
+
+.col[
+* The power of photoshop in the browser
+]
+
+.col[
+<img src="resources/ps_blend_modes.jpg" alt="Photoshop blend modes" id="ps-blend-mode" />
+]
+
+---
+
+# Hva er det?
+
+* The power of photoshop in the browser
+* To (tre, kanskje fire?) nye CSS-properties
+
+???
+
+* men for oss blir det i realiteten to/tre nye css props
+* Hvorfor: Tidligere versjoner av CSS hadde kun "Simple Alpha Compositing", 
+* Porter Duff source-over operator (kommer tilbake til de folka)
+```javascript
+EXX = Element color/alpha value
+CXX = Canvaas color/alpha value (before blending)
+CXX' = Canvaas color/alpha value (after blending)
+Ca' = 1 - (1 - Ea) * (1 - Ca)
+Cr' = (1 - Ea) * Cr + Er
+Cg' = (1 - Ea) * Cg + Eg
+Cb' = (1 - Ea) * Cb + Eb
+```
+
+---
+
+# Hva er det?
+
+* The power of photoshop in the browser
+* To (tre, kanskje fire?) nye CSS-properties
+
+
+```css
+background-blend-mode: <blend-mode>{1,}
+```
+
+```html
+blend-mode: normal | multiply | screen | overlay | darken | lighten
+            color-dodge | color-burn | hard-light | soft-light | difference
+            exclusion | hue | saturation | color | luminosity
+```
+
+???
+
+* Blending av background elemenenter, kan ta flere verdier. Vil repeate/truncate hvis antall background er ulik antall blend-modes
+* Først working-draft hos W3C 16. aug 2012, og sist oppdatert 13. January 2015
+
+---
+
+# Hva er det?
+
+* The power of photoshop in the browser
+* To (tre, kanskje fire?) nye CSS-properties
+
+```css
+background-blend-mode: <blend-mode>{1,}
+```
+
+```html
+blend-mode: normal | multiply | screen | overlay | darken | lighten
+            color-dodge | color-burn | hard-light | soft-light | difference
+            exclusion | hue | saturation | color | luminosity
+```
+
+```css
+mix-blend-mode: <blend-mode>{1}
+```
+
+???
+
+* I tillegg får vi `mix-blend-mode` som kun tar en verdi
+* Beskriver hvordan innholdet av elementet skal blendes med elementer "under" og dens bakgrunnfarge.
+* Samme mulige `blend-modes` er gyldige.
+* Både `background-blend-mode` og `mix-blend-mode` har i tillegg noen globale verdige `inital`, `inherit` og `unset`
+
+---
+
+# Hva er det?
+
+* The power of photoshop in the browser
+* To (tre, kanskje fire?) nye CSS-properties
+
+```css
+background-blend-mode: <blend-mode>{1,}
+```
+
+```html
+blend-mode: normal | multiply | screen | overlay | darken | lighten
+            color-dodge | color-burn | hard-light | soft-light | difference
+            exclusion | hue | saturation | color | luminosity
+```
+
+```css
+mix-blend-mode: <blend-mode>{1}
+```
+
+```css
+isolation: auto | isolate
+```
+
+???
+
+* Skrev tre i parente, da `isolation` er den minst kjente og brukte av de.
+* Lager en ny stacking-context for blending
+* Dette kan brukes for å hindre blending med bakgrunner du ikke er interessert i.
+
+---
+
+class: center middle
+# Hvorfan funker det?
+
+???
+
+* Kommer til å gå igjennom litt teori, de mest vanlige blend-modes, og vise noen eksempler av hva de gjør.
+
+---
+
+class: cols two
+
+# Hvordan funker det?
+
+.col[
+Backdrop-kalkulering
+]
+
+.col[
+  <img src="https://www.w3.org/TR/compositing-1/examples/simple_backdrop.svg" alt="Backdrop kalkulering" class="w3c-svg" />
+]
+
+
+???
+
+* Finner ut hvilke deler av elementet som må undersøkes ved compositing av ett element.
+* Her kommer også `isolation` inn da den kan være med på å begrense hva som regnes som backdrop.
+
+---
+
+class: cols two
+
+# Hvordan funker det?
+
+.col[
+Backdrop-kalkulering
+]
+
+.col[
+  <img src="https://www.w3.org/TR/compositing-1/examples/simple_backdrop.svg" alt="Backdrop kalkulering" class="w3c-svg" />
+]
+
+.col[
+Blending
+]
+
+.col[
+  $$Cm = B(Cb, Cs)$$
+]
+
+???
+
+* Cm: the result color after blending
+* B: the formula that does the blending
+* Cb: the backdrop color
+* Cs: the source color
+
+---
+
+class: cols two
+
+# Hvordan funker det?
+
+.col[
+Backdrop-kalkulering
+]
+
+.col[
+  <img src="https://www.w3.org/TR/compositing-1/examples/simple_backdrop.svg" alt="Backdrop kalkulering" class="w3c-svg" />
+]
+
+.col[
+Blending
+]
+
+.col[
+  $$Cm = B(Cb, Cs)$$
+]
+
+.col[
+Med-regnet alpha-kanalen
+]
+
+.col[
+  $$Cm = (1 - αb) Cs + αb  B(Cb, Cs)$$
+]
+
+???
+
+* Cr: the result color
+* B: the formula that does the blending
+* Cs: the source color
+* Cb: the backdrop color
+* αb: the backdrop alpha
+* ---
+
+* This example has a red rectangle with a blending mode that is placed on top of a set of green rectangles that have different levels of opacity.
+* Note how the top rectangle shifts more toward red as the opacity of the backdrop gets smaller.
+---
+
+class: cols two
+
+# Hvordan funker det?
+
+.col[
+Backdrop-kalkulering
+]
+
+.col[
+  <img src="https://www.w3.org/TR/compositing-1/examples/simple_backdrop.svg" alt="Backdrop kalkulering" class="w3c-svg" />
+]
+
+.col[
+Blending
+]
+
+.col[
+  $$Cm = B(Cb, Cs)$$
+]
+
+.col[
+Med-regnet alpha-kanalen
+]
+
+.col[
+  $$Cm = (1 - αb) \cdot Cs + αb \cdot B(Cb, Cs)$$
+]
+
+.col[
+Egentlig ende større, men
+]
+
+.col[
+<a href="https://www.w3.org/TR/compositing-1/#blending" target="_blank">Se W3C blend-modes</a>
+]
+
+---
+
+class: cols three
+
+# Hvordan funker det?
+
+.col[
+Normal
+]
+
+.col[
+$$B(Cb, Cs) = Cs$$
+]
+
+.col[
+  <img src="https://www.w3.org/TR/compositing-1/examples/normal.png" />
+]
+
+.col[
+Multiply
+]
+
+.col[
+$$B(Cb, Cs) = Cb \cdot Cs$$
+]
+
+.col[
+  <img src="https://www.w3.org/TR/compositing-1/examples/multiply.png" />
+]
+
+---
+
+#Hvordan funker det?
+
+## Multiply JS eksempel, uten alpha
+
+```javascript
+  tintR = source[0];
+  tintG = source[1];
+  tintB = source[2];
+
+  for (i = 0; i < iLen; i += 4) {
+    r = data[i];
+    g = data[i + 1];
+    b = data[i + 2];
+
+    // alpha compositing
+    data[i] = (tintR * r) / 255;
+    data[i + 1] = (tintG * g) / 255;
+    data[i + 2] = (tintB * b) / 255;
+  }
+```
+
+---
+
+class: split
+
+# Hvordan funker det?
+
+Hva man kan gjøre...
+
+<button class="grad-off">On/Off</button>
+<button class="grad-showoff">Show</button>
+<select class="blend-select">
+  <option>multiply</option>
+  <option>screen</option>
+  <option>overlay</option>
+  <option>darken</option>
+  <option>lighten</option>
+  <option>color-dodge</option>
+  <option>color-burn</option>
+  <option>hard-light</option>
+  <option>soft-light</option>
+  <option>difference</option>
+  <option>exclusion</option>
+  <option>hue</option>
+  <option>saturation</option>
+  <option>color</option>
+  <option>luminosity</option>
+</select>
+
+<div class="blend-ex multiply"></div>
+
+---
+
+class: center middle
+
+# The future
+<h2 class="hidden">alpha-compositing og Porter Duff</h2>
+
+???
+
+* Helt i starten nevnte jeg at det var to (tre, kanskje fire?) nye css-props
+
+
+---
+
+class: center middle
+
+#The future
+<h2>alpha-compositing og Porter Duff</h2>
+
+???
+
+* I W3C sin draft nevnes Thomas Porter og Tom Duff sin artikkel "Compositing digital images" nokså mye,
+og det refereses mye til Porter Duff operatorer allerede i introen i draften.
+* Slik det er i dag så må man laste ned en spesiell versjon av chromium for å se på det. Men vi er da bleeding-edge
+
+* http://adobe.github.io/web-platform/demos/compositing/
+
+---
+
+class: center middle
+# Hvordan funker det?
+
+
+---
+
+
+#Lenker
+
+
+
+    </textarea>
+    <script src="https://cdn.rawgit.com/bekk/remark/master/vendor/remark.min.js" type="text/javascript"></script>
+    <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script type="text/javascript">
+      function addStyleString(str) {
+        var node = document.createElement('style');
+        node.innerHTML = str;
+        document.body.appendChild(node);
+
+        return node;
+      }
+
+      var harGradienter = undefined;
+      var harShowoff = undefined;
+      var harOverrideBlend = undefined;
+
+      var slideshow = remark.create({
+        ratio: '16:9',
+        highlightLanguage: 'javascript',
+        highlightStyle: 'monokai',
+        navigation: {
+          scroll: false
+        }
+      });
+
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+      MathJax.Hub.Queue(function() {
+          $(MathJax.Hub.getAllJax()).map(function(index, elem) {
+              return(elem.SourceElement());
+          }).parent().addClass('has-jax');
+      });
+
+      MathJax.Hub.Configured();
+
+      document.body.addEventListener('click', function(e) {
+        var node = e.target.nodeName;
+        var classList = e.target.classList;
+        
+        if (node === 'BUTTON') {
+          if (classList.contains('grad-off')) {
+              if (harGradienter === undefined) {
+                harGradienter = addStyleString('.blend-ex { background-blend-mode: normal !important; }');
+              } else {
+                harGradienter.remove();
+                harGradienter = undefined;
+              }
+          } else if (classList.contains('grad-showoff')) {
+              if (harShowoff === undefined) {
+                harShowoff = addStyleString('.blend-ex { background-image: url("resources/lighthouse.jpg"), linear-gradient(#de6e3d, #de6e3d 49%, #6375F9 51%, #6375F9) !important; }');
+              } else {
+                harShowoff.remove();
+                harShowoff = undefined;
+              }
+          }
+        }
+
+      });
+
+      document.body.addEventListener('change', function(e) {
+        var node = e.target.nodeName;
+        var classList = e.target.classList;
+
+        console.log('e', e.target);
+
+        if (node === 'SELECT' && classList.contains('blend-select')) {
+          if (harOverrideBlend !== undefined) {
+            harOverrideBlend.remove();
+            harOverrideBlend = undefined;
+          }
+          harOverrideBlend = addStyleString('.blend-ex { background-blend-mode: '+e.target.value+' !important; }');
+        }
+        e.preventDefault();
+        e.stopPropagation();
+      })
+    </script>
+  </body>
+</html>
